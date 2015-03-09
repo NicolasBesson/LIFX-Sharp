@@ -1,7 +1,11 @@
 ﻿using System;
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+
+#else
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+#endif
 using LifxLib.Messages;
 
 namespace LifxLib
@@ -155,7 +159,11 @@ namespace LifxLib
             }
             set
             {
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+                TimestampRaw = (UInt64) (value - new DateTime(1970, 01, 01)).Ticks * 10;
+#else
                 TimestampRaw = (UInt64) (value - new DateTime(1970, 01, 01)).TotalMilliseconds * 10;
+#endif
             }
         }
 

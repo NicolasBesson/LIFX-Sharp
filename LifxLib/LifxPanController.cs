@@ -1,9 +1,14 @@
 ﻿using System;
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+using System.Collections;
+using System.Net;
+#else
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
 using System.Drawing;
+#endif
 using LifxLib.Messages;
 
 namespace LifxLib
@@ -12,8 +17,11 @@ namespace LifxLib
     {
         private string mMacAddress = "";        
         private IPEndPoint mIpAddress;
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+        ArrayList mBulbs = new ArrayList();
+#else
         List<LifxBulb> mBulbs = new List<LifxBulb>();
-
+#endif
        
         public LifxPanController(string macAddress, IPEndPoint ipAddress)
         {
@@ -139,9 +147,13 @@ namespace LifxLib
             get { return mIpAddress; }
             set { mIpAddress = value; }
         }
-        
+      
+ #if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+        public ArrayList Bulbs
+#else
         public List<LifxBulb> Bulbs
-        {
+#endif
+    {
             get { return mBulbs; }
             set { mBulbs = value; }
         }

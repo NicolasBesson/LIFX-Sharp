@@ -1,7 +1,11 @@
 ﻿using System;
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+using System.Collections;
+#else
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+#endif
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -13,12 +17,12 @@ namespace LifxLib
 {
     public class LifxCommunicator : IDisposable
     {
-        private class UdpState
+        public class UdpState
         {
             public UdpClient udpClient;
             public IPEndPoint endPoint;
         }
-        private class IncomingMessage
+        public class IncomingMessage
         { 
             public LifxDataPacket Data;
             public IPEndPoint BulbAddress;
@@ -30,10 +34,14 @@ namespace LifxLib
             }
         }
 
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+        private Queue mIncomingQueue = new Queue();
+        private ArrayList mFoundPanHandlers = new ArrayList();
+#else
         private Queue<IncomingMessage> mIncomingQueue = new Queue<IncomingMessage>(10);
 
         private List<LifxPanController> mFoundPanHandlers = new List<LifxPanController>();
-
+#endif
         private const Int32 LIFX_PORT = 56700;
         private int mTimeoutMilliseconds = 1000;
         private UdpClient mSendCommandClient;
@@ -68,22 +76,40 @@ namespace LifxLib
         {
             IPEndPoint end = new IPEndPoint(IPAddress.Any, 56700);
             mListnerClient = new UdpClient(end);
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+            mListnerClient.Blocking = false;
+#else 
             mListnerClient.Client.Blocking = false;
+#endif
             UdpState udpState = new UdpState();
             udpState.endPoint = end;
             udpState.udpClient = mListnerClient;
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+            mListnerClient.SetSocketOption(
+                    SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+#else
             mListnerClient.Client.SetSocketOption(
                 SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+#endif
 
             mListnerClient.BeginReceive(new AsyncCallback(ReceiveCallback), udpState);
             mIsInitialized = true;
         }
 
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
         private void ReceiveCallback(IAsyncResult ar)
+        {
+            ReceiveCallback((UDPAsyncResult)ar);
+        }
+
+        private void ReceiveCallback(UDPAsyncResult ar)
+#else
+        private void ReceiveCallback(IAsyncResult ar)
+#endif
         {
             if (mIsDisposed)
                 return;
-
+           
             UdpClient client = (UdpClient)((UdpState)(ar.AsyncState)).udpClient;
             IPEndPoint endPoint = (IPEndPoint)((UdpState)(ar.AsyncState)).endPoint;            
 
@@ -102,7 +128,11 @@ namespace LifxLib
         /// Discovers the PanControllers (including their bulbs)
         /// </summary>
         /// <returns>List of bulbs</returns>
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+        public ArrayList Discover()
+#else
         public List<LifxPanController> Discover()
+#endif
         {
             LifxGetPANGatewayCommand getPANCommand = new LifxGetPANGatewayCommand();
 
@@ -174,11 +204,16 @@ namespace LifxLib
             if (command.ReturnMessage == null)
                 return null;
 
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+            // TODO : Check if this is correct
+            while ((DateTime.Now - commandSentTime).Ticks < mTimeoutMilliseconds)
+#else
             while ((DateTime.Now - commandSentTime).TotalMilliseconds < mTimeoutMilliseconds)
+#endif
             {
                 if (mIncomingQueue.Count != 0)
                 {
-                    IncomingMessage mess = mIncomingQueue.Dequeue();
+                    IncomingMessage mess = (IncomingMessage)mIncomingQueue.Dequeue();
                     LifxDataPacket receivedPacket = mess.Data;
 
 
@@ -272,7 +307,11 @@ namespace LifxLib
             { 
                 if (command.IsBroadcastCommand)
                 {
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+                    if (mSendCommandClient.EnableBroadcast)
+#else
                     if (mSendCommandClient.Client.EnableBroadcast)
+#endif
                     {
                         return mSendCommandClient;
                     }
@@ -284,7 +323,11 @@ namespace LifxLib
                 }
                 else
                 {
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+                    if (mSendCommandClient.EnableBroadcast)
+#else
                     if (mSendCommandClient.Client.EnableBroadcast)
+#endif
                     {
                         mSendCommandClient.Close();
                         return CreateClient(command, endPoint); 
@@ -297,6 +340,7 @@ namespace LifxLib
                 }
             }
         }
+
         private UdpClient CreateClient(LifxCommand command, IPEndPoint endPoint)
         {
             if (command.IsBroadcastCommand)
@@ -304,19 +348,30 @@ namespace LifxLib
                 mSendCommandClient = new UdpClient();
 
                 mSendCommandClient.EnableBroadcast = true;
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+                mSendCommandClient.SetSocketOption(
+                        SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                mSendCommandClient.Connect(new IPEndPoint(IPAddress.Parse("255.255.255.255"), LIFX_PORT));
+
+#else
                 mSendCommandClient.Client.SetSocketOption(
                 SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
                 mSendCommandClient.Connect(new IPEndPoint(IPAddress.Broadcast, LIFX_PORT));
+#endif
                 return mSendCommandClient;
             }
             else
             {
                 mSendCommandClient = new UdpClient();
 
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+                mSendCommandClient.SetSocketOption(
+                SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+#else
                 mSendCommandClient.Client.SetSocketOption(
                 SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-
+#endif
                 mSendCommandClient.Connect(endPoint);
                 return mSendCommandClient;
 

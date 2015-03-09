@@ -1,8 +1,12 @@
 ﻿using System;
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+using Microsoft.SPOT.Presentation.Media;
+#else
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Drawing;
+#endif
+using System.Text;
 
 namespace LifxLib
 {
@@ -12,7 +16,13 @@ namespace LifxLib
         {
             StringBuilder hex = new StringBuilder(ba.Length * 2);
             foreach (byte b in ba)
+            {
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+                throw new NotImplementedException();
+#else
                 hex.AppendFormat("{0:x2}", b);
+#endif
+            }
             return hex.ToString();
         }
 
@@ -21,14 +31,18 @@ namespace LifxLib
             int NumberChars = hex.Length;
             byte[] bytes = new byte[NumberChars / 2];
             for (int i = 0; i < NumberChars; i += 2)
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+                bytes[i / 2] = Encoding.UTF8.GetBytes(hex.Substring(i, 2))[0];
+#else
                 bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
-            return bytes;
+#endif
+                return bytes;
         }
 
        
 
     }
-
+    /*
     public class HSLColor
     {
         // Private data members below are on scale 0-1
@@ -66,13 +80,31 @@ namespace LifxLib
 
         public override string ToString()
         {
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+            string str = "";
+            str += "H: " + Hue.ToString("F2");
+            str += "S: " + Saturation.ToString("F2");
+            str += "L: " + Luminosity.ToString("F2");
+            
+            return str;
+#else
             return String.Format("H: {0:#0.##} S: {1:#0.##} L: {2:#0.##}", Hue, Saturation, Luminosity);
+#endif
         }
 
         public string ToRGBString()
         {
             Color color = (Color)this;
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+            string str = "";
+            str += "R : " + ColorUtility.GetRValue(color);
+            str += "G : " + ColorUtility.GetGValue(color);
+            str += "B : " + ColorUtility.GetBValue(color);
+            
+            return str;
+#else
             return String.Format("R: {0:#0.##} G: {1:#0.##} B: {2:#0.##}", color.R, color.G, color.B);
+#endif
         }
 
         #region Casts to/from System.Drawing.Color
@@ -93,7 +125,11 @@ namespace LifxLib
                     b = GetColorComponent(temp1, temp2, hslColor.hue - 1.0 / 3.0);
                 }
             }
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+            return ColorUtility.ColorFromRGB((byte)(255 * r), (byte)(255 * g), (byte)(255 * b));
+#else
             return Color.FromArgb((int)(255 * r), (int)(255 * g), (int)(255 * b));
+#endif
         }
 
         private static double GetColorComponent(double temp1, double temp2, double temp3)
@@ -129,16 +165,24 @@ namespace LifxLib
         public static implicit operator HSLColor(Color color)
         {
             HSLColor hslColor = new HSLColor();
+            #if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+            return ColorUtility.ColorFromRGB(
+#else
             hslColor.hue = color.GetHue() / 360.0; // we store hue as 0-1 as opposed to 0-360 
             hslColor.luminosity = color.GetBrightness();
             hslColor.saturation = color.GetSaturation();
+#endif
             return hslColor;
         }
         #endregion
 
         public void SetRGB(int red, int green, int blue)
         {
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+            HSLColor hslColor = (HSLColor) ColorUtility.ColorFromRGB((byte)red, (byte)green, (byte)blue);
+#else
             HSLColor hslColor = (HSLColor)Color.FromArgb(red, green, blue);
+#endif
             this.hue = hslColor.hue;
             this.saturation = hslColor.saturation;
             this.luminosity = hslColor.luminosity;
@@ -161,6 +205,7 @@ namespace LifxLib
         }
 
     }
+     **/
 }
 
 

@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <AssemblyName>LifxLib</AssemblyName>
+    <OutputType>Library</OutputType>
+    <RootNamespace>LifxLib</RootNamespace>
+    <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7139DFC6-823F-4382-90C6-D6F7C207D56E}</ProjectGuid>
+    <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
+    <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
+  <ItemGroup>
+    <Compile Include="LifxBulb.cs" />
+    <Compile Include="LifxColor.cs" />
+    <Compile Include="LifxCommunicator.cs" />
+    <Compile Include="LifxDataPacket.cs" />
+    <Compile Include="LifxHelper.cs" />
+    <Compile Include="LifxLightStatus.cs" />
+    <Compile Include="LifxPanController.cs" />
+    <Compile Include="LifxPowerState.cs" />
+    <Compile Include="Messages\Commands\LifxCommand.cs" />
+    <Compile Include="Messages\Commands\LifxGetLabelCommand.cs" />
+    <Compile Include="Messages\Commands\LifxGetLightStatusCommand.cs" />
+    <Compile Include="Messages\Commands\LifxGetPANGatewayCommand.cs" />
+    <Compile Include="Messages\Commands\LifxGetPowerStateCommand.cs" />
+    <Compile Include="Messages\Commands\LifxGetTagLabelCommand.cs" />
+    <Compile Include="Messages\Commands\LifxGetTagsCommand.cs" />
+    <Compile Include="Messages\Commands\LifxSetDimAbsoluteCommand.cs" />
+    <Compile Include="Messages\Commands\LifxSetLabelCommand.cs" />
+    <Compile Include="Messages\Commands\LifxSetLightStateCommand.cs" />
+    <Compile Include="Messages\Commands\LifxSetPowerStateCommand.cs" />
+    <Compile Include="Messages\Commands\LifxSetTagsCommand.cs" />
+    <Compile Include="Messages\ResponseMessages\LifxLabelMessage.cs" />
+    <Compile Include="Messages\ResponseMessages\LifxLightStatusMessage.cs" />
+    <Compile Include="Messages\ResponseMessages\LifxPANGatewayStateMessage.cs" />
+    <Compile Include="Messages\ResponseMessages\LifxPANServiceType.cs" />
+    <Compile Include="Messages\ResponseMessages\LifxPowerStateMessage.cs" />
+    <Compile Include="Messages\ResponseMessages\LifxReceivedMessage.cs" />
+    <Compile Include="Messages\ResponseMessages\LifxTagLabelMessage.cs" />
+    <Compile Include="Messages\ResponseMessages\LifxTagsMessage.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TimeoutException.cs" />
+    <Compile Include="UDPAsyncResult.cs" />
+    <Compile Include="UdpClient.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SPOT.Graphics" />
+    <Reference Include="Microsoft.SPOT.Native">
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Net.Security" />
+  </ItemGroup>
+</Project>

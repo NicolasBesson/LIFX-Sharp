@@ -1,8 +1,13 @@
 ﻿using System;
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+using Microsoft.SPOT;
+using Microsoft.SPOT.Presentation.Media;
+#else
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+#endif
 
 namespace LifxLib
 {
@@ -24,11 +29,11 @@ namespace LifxLib
 
         public LifxColor(Color color, UInt16 kelvinValue)
         {
-            DotNetColor = color;
+//            DotNetColor = color;
             mKelvin = kelvinValue;
         }
 
-        public HSLColor HSLColor
+       /* public HSLColor HSLColor
         {
             get
             {
@@ -54,7 +59,7 @@ namespace LifxLib
             }
         
         }
-
+        */
         public UInt16 Hue
         {
             get { return mHue; }

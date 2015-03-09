@@ -1,9 +1,14 @@
 ﻿using System;
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+
+#else
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Net;
+
 using System.Drawing;
+#endif
+using System.Net;
 using LifxLib.Messages;
 
 namespace LifxLib
