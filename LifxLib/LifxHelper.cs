@@ -43,8 +43,6 @@ namespace LifxLib
 
     }
 
-#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
-#else
     public class HSLColor
     {
         // Private data members below are on scale 0-1
@@ -168,13 +166,61 @@ namespace LifxLib
         {
             HSLColor hslColor = new HSLColor();
 #if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
-            return ColorUtility.ColorFromRGB(
+            double r = ColorUtility.GetRValue(color) / 255.0;
+            double g = ColorUtility.GetGValue(color) / 255.0;
+            double b = ColorUtility.GetBValue(color) / 255.0;
+            double v;
+            double m;
+            double vm;
+            double r2, g2, b2;
+
+            hslColor.hue = 0; // default to black
+            hslColor.saturation = 0;
+            hslColor.luminosity = 0;
+            v = Math.Max(r, g);
+            v = Math.Max(v, b);
+            m = Math.Min(r, g);
+            m = Math.Min(m, b);
+            hslColor.luminosity = (m + v) / 2.0;
+            if (hslColor.luminosity <= 0.0)
+            {
+                return hslColor;
+            }
+            vm = v - m;
+            hslColor.saturation = vm;
+            if (hslColor.saturation > 0.0)
+            {
+                hslColor.saturation /= (hslColor.luminosity <= 0.5) ? (v + m) : (2.0 - v - m);
+            }
+            else
+            {
+                return hslColor;
+            }
+            r2 = (v - r) / vm;
+            g2 = (v - g) / vm;
+            b2 = (v - b) / vm;
+            if (r == v)
+            {
+                hslColor.hue = (g == m ? 5.0 + b2 : 1.0 - g2);
+            }
+            else if (g == v)
+            {
+                hslColor.hue = (b == m ? 1.0 + r2 : 3.0 - b2);
+            }
+            else
+            {
+                hslColor.hue = (r == m ? 3.0 + g2 : 5.0 - r2);
+            }
+            hslColor.hue /= 6.0;
+
+            return hslColor;
 #else
             hslColor.hue = color.GetHue() / 360.0; // we store hue as 0-1 as opposed to 0-360 
             hslColor.luminosity = color.GetBrightness();
             hslColor.saturation = color.GetSaturation();
-#endif
+
             return hslColor;
+#endif
         }
         #endregion
 
@@ -193,7 +239,11 @@ namespace LifxLib
         public HSLColor() { }
         public HSLColor(Color color)
         {
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+            SetRGB(ColorUtility.GetRValue(color), ColorUtility.GetGValue(color), ColorUtility.GetBValue(color));
+#else
             SetRGB(color.R, color.G, color.B);
+#endif
         }
         public HSLColor(int red, int green, int blue)
         {
@@ -207,7 +257,6 @@ namespace LifxLib
         }
 
     }
-#endif
 }
 
 
