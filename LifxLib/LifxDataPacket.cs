@@ -13,7 +13,7 @@ namespace LifxLib
     public class LifxDataPacket
     {
         private byte[] mPacketData;
-        private const UInt16 STANDARD_PROTOCOL = (UInt16)0x3400;
+        private const UInt16 STANDARD_PROTOCOL = (UInt16)0x1400;
 
         public LifxDataPacket(byte[] packetData)
         {
