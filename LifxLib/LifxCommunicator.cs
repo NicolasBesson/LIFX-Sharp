@@ -205,8 +205,8 @@ namespace LifxLib
                 return null;
 
 #if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
-            // TODO : Check if this is correct
-            while ((DateTime.Now - commandSentTime).Ticks < mTimeoutMilliseconds)
+            // Timespan.Ticks is expressed in 100 nanoseconds
+            while (((DateTime.Now - commandSentTime).Ticks / 10000) < mTimeoutMilliseconds)
 #else
             while ((DateTime.Now - commandSentTime).TotalMilliseconds < mTimeoutMilliseconds)
 #endif
