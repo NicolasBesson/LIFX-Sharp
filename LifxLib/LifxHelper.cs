@@ -42,7 +42,9 @@ namespace LifxLib
        
 
     }
-    /*
+
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+#else
     public class HSLColor
     {
         // Private data members below are on scale 0-1
@@ -165,7 +167,7 @@ namespace LifxLib
         public static implicit operator HSLColor(Color color)
         {
             HSLColor hslColor = new HSLColor();
-            #if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
             return ColorUtility.ColorFromRGB(
 #else
             hslColor.hue = color.GetHue() / 360.0; // we store hue as 0-1 as opposed to 0-360 
@@ -205,7 +207,7 @@ namespace LifxLib
         }
 
     }
-     **/
+#endif
 }
 
 

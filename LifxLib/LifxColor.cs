@@ -29,11 +29,16 @@ namespace LifxLib
 
         public LifxColor(Color color, UInt16 kelvinValue)
         {
-//            DotNetColor = color;
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+#else
+            DotNetColor = color;
+#endif
             mKelvin = kelvinValue;
         }
 
-       /* public HSLColor HSLColor
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+#else
+        public HSLColor HSLColor
         {
             get
             {
@@ -46,7 +51,10 @@ namespace LifxLib
                 mLumnosity = (ushort)(value.Luminosity * 65535 / 240);
             }
         }
+#endif
 
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+#else
         public Color DotNetColor
         {
             get 
@@ -59,7 +67,7 @@ namespace LifxLib
             }
         
         }
-        */
+#endif
         public UInt16 Hue
         {
             get { return mHue; }
