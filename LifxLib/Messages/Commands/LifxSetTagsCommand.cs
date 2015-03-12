@@ -16,7 +16,7 @@ namespace LifxLib.Messages
 
 
         public LifxSetTagsCommand(UInt64 tagsValue)
-            : base(PACKET_TYPE, new LifxTagsMessage())
+            : base(PACKET_TYPE, null)
         {
             mTagsValue = tagsValue;
         }

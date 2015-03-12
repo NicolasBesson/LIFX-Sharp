@@ -17,7 +17,7 @@ namespace LifxLib.Messages
 
        
         public LifxSetLabelCommand(string newLabelName)
-            : base(PACKET_TYPE, new LifxLabelMessage())
+            : base(PACKET_TYPE, null)
         {
             mLabelName = newLabelName;    
         }

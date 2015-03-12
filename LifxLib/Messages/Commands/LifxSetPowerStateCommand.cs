@@ -15,7 +15,7 @@ namespace LifxLib.Messages
         private const UInt16 PACKET_TYPE = 0x15;
 
         public LifxSetPowerStateCommand(LifxPowerState stateToSet)
-            : base(PACKET_TYPE, new LifxPowerStateMessage())
+            : base(PACKET_TYPE, null)
         {
             mStateToSet = stateToSet;
         }

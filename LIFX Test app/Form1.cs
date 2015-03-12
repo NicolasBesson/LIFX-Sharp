@@ -15,7 +15,8 @@ namespace Lifx_Test_app
 {
     public partial class Form1 : Form
     {
-        LifxBulb mBulb;
+        //LifxBulb mBulb;
+        LifxPanController mPanController;
 
         public Form1()
         {
@@ -39,18 +40,18 @@ namespace Lifx_Test_app
                 return;            
             }
 
-            mBulb = panController[0].Bulbs[0];
+            mPanController = panController[0];
 
-            mBulbIPTB.Text = mBulb.IpEndpoint.Address.ToString(); 
-            mTargetMACTB.Text = mBulb.MacAddress;
-            mPANControllerTB.Text = mBulb.PanHandler;
+            mBulbIPTB.Text = mPanController.IpEndpoint.Address.ToString();
+            mTargetMACTB.Text = mPanController.MacAddress;
+            mPANControllerTB.Text = mPanController.MacAddress;
 
-            LifxPowerState powerState = mBulb.GetPowerState();
+            //LifxPowerState powerState = mPanController.GetPowerState();
 
-            if (powerState == LifxPowerState.On)
-                mPowerStateOnCB.Checked = true;
-            else
-                mPowerStateOnCB.Checked = false;
+            //if (powerState == LifxPowerState.On)
+            //    mPowerStateOnCB.Checked = true;
+            //else
+            //    mPowerStateOnCB.Checked = false;
 
             mPowerGB.Enabled = true;
             mLabelsGB.Enabled = true;
@@ -68,7 +69,7 @@ namespace Lifx_Test_app
 
         private void SetPowerState(LifxPowerState state)
         {
-            mBulb.SetPowerState(state);
+            mPanController.SetPowerState(state);
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -89,12 +90,12 @@ namespace Lifx_Test_app
 
         private void button4_Click(object sender, EventArgs e)
         {
-            mLabelTB.Text = mBulb.GetLabel();
+            mLabelTB.Text = mPanController.GetLabel();
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            mLabelTB.Text = mBulb.SetLabel(mLabelTB.Text);
+            mLabelTB.Text = mPanController.SetLabel(mLabelTB.Text);
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -138,7 +139,7 @@ namespace Lifx_Test_app
 
         private void button8_Click(object sender, EventArgs e)
         {
-            LifxLightStatus status = mBulb.GetLightStatus();
+            LifxLightStatus status = mPanController.GetLightStatus();
 
             mBulbColorP.BackColor = status.Color.DotNetColor;
             mKelvinTB.Text = status.Color.Kelvin.ToString();
@@ -162,7 +163,7 @@ namespace Lifx_Test_app
                 return;
             }
 
-            mBulb.SetColor(new LifxColor(mBulbColorP.BackColor, kelvinValue), fadeTime);
+            mPanController.SetColor(new LifxColor(mBulbColorP.BackColor, kelvinValue), fadeTime);
 
         }
 
@@ -183,7 +184,7 @@ namespace Lifx_Test_app
                 return;
             }
 
-            mBulb.SetDimLevel(dimLevel, fadeTime);
+            mPanController.SetDimLevel(dimLevel, fadeTime);
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
