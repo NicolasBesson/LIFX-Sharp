@@ -17,7 +17,7 @@ namespace LifxLib
         private bool _Closed;
 
         AsyncCallback _DataCallback;
-        object _DataCallbackObject;
+        Object _DataCallbackObject;
         ProcessClientRequest _processRequest;
 
 
@@ -46,7 +46,7 @@ namespace LifxLib
             // Resolves the hostname to an IP address
             IPHostEntry address = Dns.GetHostEntry(_Hostname);
             // Creates the new IP end point
-            EndPoint Destination = new IPEndPoint(address.AddressList[0], (int)_Port);
+            EndPoint Destination = new IPEndPoint(address.AddressList[0], (int)ip.Port);
             // Connects to the socket
             _socket.Connect(Destination);
             this._Closed = false;
@@ -144,8 +144,10 @@ namespace LifxLib
                         // Store received data
                         _clientSocket.Data = buffer;
 
-                        // Involke call back
-                        _clientSocket._DataCallback.Invoke((IAsyncResult)_clientSocket._DataCallbackObject);
+                        // Invoke call back
+                        UDPAsyncResult ar = new UDPAsyncResult();
+                        ar.AsyncState = (LifxCommunicator.UdpState)_clientSocket._DataCallbackObject;
+                        _clientSocket._DataCallback.Invoke(ar);
                         break;
                     }
                     else
