@@ -92,7 +92,8 @@ namespace LifxLib
                 SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 #endif
 
-            mListnerClient.BeginReceive(new AsyncCallback(ReceiveCallback), udpState);
+            // DO NOT NEED RESPONSE FROM THE LIFX
+            //mListnerClient.BeginReceive(new AsyncCallback(ReceiveCallback), udpState);
             mIsInitialized = true;
         }
 
@@ -168,10 +169,6 @@ namespace LifxLib
             
             
         }
-        public LifxReceivedMessage SendCommand(LifxCommand command, LifxBulb bulb)
-        {
-            return SendCommand(command, bulb.MacAddress, bulb.PanHandler, bulb.IpEndpoint);
-        }
 
         public LifxReceivedMessage SendCommand(LifxCommand command, LifxPanController panController)
         {
@@ -195,7 +192,7 @@ namespace LifxLib
 
             LifxDataPacket packet = new LifxDataPacket(command);
             packet.TargetMac = LifxHelper.StringToByteArray(macAddress);
-            packet.PanControllerMac = LifxHelper.StringToByteArray(panController);
+            packet.PanControllerMac = LifxHelper.StringToByteArray(""); //PanControllerMac has to be set to 0.0.0.0 to commincate with the LIFX
 
             client.Send(packet.PacketData, packet.PacketData.Length);
 
@@ -234,9 +231,6 @@ namespace LifxLib
                         LifxLightStatusMessage panGateway = new LifxLightStatusMessage();
                         panGateway.ReceivedData = receivedPacket;
 
-                        AddDiscoveredBulb(
-                            LifxHelper.ByteArrayToString(receivedPacket.TargetMac),   
-                            LifxHelper.ByteArrayToString(receivedPacket.PanControllerMac));
                     }
                     else if (receivedPacket.PacketType == command.ReturnMessage.PacketType)
                     {
@@ -275,27 +269,6 @@ namespace LifxLib
 
             mFoundPanHandlers.Add(foundPanHandler);
         }
-
-        private void AddDiscoveredBulb(string macAddress, string panController)
-        {
-            foreach (LifxPanController controller in mFoundPanHandlers)
-            {
-                if (controller.MacAddress == panController)
-                {
-                    foreach (LifxBulb bulb in controller.Bulbs)
-                    {
-                        if (bulb.MacAddress == macAddress)
-                            return;
-                    }
-
-                    controller.Bulbs.Add(new LifxBulb(controller, macAddress));
-                    return;
-                }
-            }
-
-            throw new InvalidOperationException("Should not end up here basically.");
-        }
-
 
         private UdpClient GetConnectedClient(LifxCommand command, IPEndPoint endPoint)
         {

@@ -12,7 +12,7 @@ namespace LifxLib
 
         private Socket _socket;
         private string _Hostname;
-        private ushort _Port;
+        private int _Port;
         private IPEndPoint _endPoint;
         private bool _Closed;
 
@@ -42,11 +42,12 @@ namespace LifxLib
         public void Connect(IPEndPoint ip)
         {
             _Hostname = ip.Address.ToString();
+            _Port = ip.Port;
 
             // Resolves the hostname to an IP address
             IPHostEntry address = Dns.GetHostEntry(_Hostname);
             // Creates the new IP end point
-            EndPoint Destination = new IPEndPoint(address.AddressList[0], (int)ip.Port);
+            EndPoint Destination = new IPEndPoint(address.AddressList[0], _Port);
             // Connects to the socket
             _socket.Connect(Destination);
             this._Closed = false;
@@ -147,7 +148,10 @@ namespace LifxLib
                         // Invoke call back
                         UDPAsyncResult ar = new UDPAsyncResult();
                         ar.AsyncState = (LifxCommunicator.UdpState)_clientSocket._DataCallbackObject;
-                        _clientSocket._DataCallback.Invoke(ar);
+
+                        UDPAsyncResult TMP = new UDPAsyncResult();
+                        TMP.AsyncState = (LifxLib.LifxCommunicator.UdpState)_clientSocket._DataCallbackObject;
+                        _clientSocket._DataCallback.Invoke(TMP);
                         break;
                     }
                     else

@@ -30,7 +30,6 @@
   </PropertyGroup>
   <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <ItemGroup>
-    <Compile Include="LifxBulb.cs" />
     <Compile Include="LifxColor.cs" />
     <Compile Include="LifxCommunicator.cs" />
     <Compile Include="LifxDataPacket.cs" />

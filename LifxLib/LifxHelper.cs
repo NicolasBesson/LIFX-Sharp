@@ -14,16 +14,22 @@ namespace LifxLib
     {
         public static string ByteArrayToString(byte[] ba)
         {
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+            string retour = String.Empty;
+            string toto = BitConverter.ToString(ba);
+            foreach (string str in toto.Split('-'))
+            {
+                retour += str;
+            }
+            return retour; 
+#else
             StringBuilder hex = new StringBuilder(ba.Length * 2);
             foreach (byte b in ba)
             {
-#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
-                throw new NotImplementedException();
-#else
                 hex.AppendFormat("{0:x2}", b);
-#endif
             }
             return hex.ToString();
+#endif
         }
 
         public static byte[] StringToByteArray(String hex)
