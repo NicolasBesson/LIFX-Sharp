@@ -92,8 +92,8 @@ namespace LifxLib
                 SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 #endif
 
-            // DO NOT NEED RESPONSE FROM THE LIFX
-            //mListnerClient.BeginReceive(new AsyncCallback(ReceiveCallback), udpState);
+            // Enable Client listener for answers
+            mListnerClient.BeginReceive(new AsyncCallback(ReceiveCallback), udpState);
             mIsInitialized = true;
         }
 
@@ -138,7 +138,12 @@ namespace LifxLib
             LifxGetPANGatewayCommand getPANCommand = new LifxGetPANGatewayCommand();
 
            mFoundPanHandlers.Clear();
+#if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
+           // Net MicroFramework devices are less powerful so give us some time to process
+           mTimeoutMilliseconds = 3000;
+#else
            mTimeoutMilliseconds = 1500;
+#endif
            int savedTimeout = mTimeoutMilliseconds;
 
            try
