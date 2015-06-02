@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -11,6 +10,7 @@ namespace LifxLib
     {
 
         private Socket _socket;
+        private bool _isBind = false;
         private string _Hostname;
         private int _Port;
         private IPEndPoint _endPoint;
@@ -26,6 +26,7 @@ namespace LifxLib
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             EnableBroadcast = false;
             _Closed = false;
+            _isBind = false;
         }
 
         public UdpClient(IPEndPoint endPoint)
@@ -39,25 +40,38 @@ namespace LifxLib
             _Closed = false;
         }
 
+        /// <summary>
+        /// Connect the socket
+        /// </summary>
+        /// <param name="ip"></param>
         public void Connect(IPEndPoint ip)
         {
             _Hostname = ip.Address.ToString();
             _Port = ip.Port;
+            // NOTE : No need to resolve the hostname to an IP address
+            EndPoint Destination = new IPEndPoint(ip.Address, _Port);
 
-            // Resolves the hostname to an IP address
-            IPHostEntry address = Dns.GetHostEntry(_Hostname);
-            // Creates the new IP end point
-            EndPoint Destination = new IPEndPoint(address.AddressList[0], _Port);
             // Connects to the socket
             _socket.Connect(Destination);
             this._Closed = false;
         }
-
+        
+        /// <summary>
+        /// Change socket options
+        /// </summary>
+        /// <param name="socketOptionLevel"></param>
+        /// <param name="socketOptionName"></param>
+        /// <param name="p"></param>
         public void SetSocketOption(SocketOptionLevel socketOptionLevel, SocketOptionName socketOptionName, bool p)
         {
             _socket.SetSocketOption(socketOptionLevel, socketOptionName, p);
         }
 
+        /// <summary>
+        /// Send data over the socket
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="size"></param>
         public void Send(byte[] buffer, int size)
         {
             _socket.Send(buffer, size, 0);
@@ -67,6 +81,11 @@ namespace LifxLib
             if (size < 32) Thread.Sleep(size * 10);
         }
 
+        /// <summary>
+        /// Start receive thread
+        /// </summary>
+        /// <param name="asyncCallback"></param>
+        /// <param name="state"></param>
         public void BeginReceive(AsyncCallback asyncCallback, Object state)
         {
             if (_Closed)
@@ -80,6 +99,25 @@ namespace LifxLib
 
         }
 
+        /// <summary>
+        /// Bind the socket
+        /// </summary>
+        /// <param name="ep"></param>
+        private void Bind(EndPoint ep)
+        {
+            if (_isBind == false)
+            {
+                _socket.Bind(ep);
+                _isBind = true;
+            }
+        }
+
+        /// <summary>
+        /// Stop receiving data
+        /// </summary>
+        /// <param name="ar"></param>
+        /// <param name="endPoint"></param>
+        /// <returns></returns>
         internal byte[] EndReceive(IAsyncResult ar, ref IPEndPoint endPoint)
         {
             if (_Closed)
@@ -91,16 +129,28 @@ namespace LifxLib
             return Data;
         }
 
+        /// <summary>
+        /// Close the socket
+        /// </summary>
         public void Close()
         {
             _Closed = true;
             _socket.Close();
         }
 
+        /// <summary>
+        /// Set blocking state of the socket
+        /// </summary>
         public bool Blocking { get; set; }
 
+        /// <summary>
+        /// Allow broadcast
+        /// </summary>
         public bool EnableBroadcast { get; set; }
 
+        /// <summary>
+        /// Socket data
+        /// </summary>
         public byte[] Data { get; set; }
 
 
@@ -133,7 +183,7 @@ namespace LifxLib
             private void ProcessRequest()
             {
                 EndPoint endPoint = _clientSocket._endPoint;
-                _clientSocket._socket.Bind(endPoint);
+                _clientSocket.Bind(endPoint);
 
                 while (true)
                 {
@@ -148,10 +198,9 @@ namespace LifxLib
                         // Invoke call back
                         UDPAsyncResult ar = new UDPAsyncResult();
                         ar.AsyncState = (LifxCommunicator.UdpState)_clientSocket._DataCallbackObject;
+                        ar.AsyncState.endPoint = (IPEndPoint)endPoint;
 
-                        UDPAsyncResult TMP = new UDPAsyncResult();
-                        TMP.AsyncState = (LifxLib.LifxCommunicator.UdpState)_clientSocket._DataCallbackObject;
-                        _clientSocket._DataCallback.Invoke(TMP);
+                        _clientSocket._DataCallback.Invoke(ar);
                         break;
                     }
                     else
@@ -161,10 +210,6 @@ namespace LifxLib
                 }
             }
         }
-
-
-
-
     }
 }
 
