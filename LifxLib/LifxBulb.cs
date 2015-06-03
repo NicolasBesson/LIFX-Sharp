@@ -15,13 +15,11 @@ namespace LifxLib
 {
     public class LifxBulb
     {
-        private string mMacAddress = "";
         private LifxPanController mPanController;
 
-        public LifxBulb(LifxPanController panController, string macAddress)
+        public LifxBulb(LifxPanController panController)
         {
             mPanController = panController;
-            mMacAddress = macAddress;
             
         }
 
@@ -33,7 +31,7 @@ namespace LifxLib
         {
             LifxGetPowerStateCommand command = new LifxGetPowerStateCommand();
 
-            LifxCommunicator.Instance.SendCommand(command, this);
+            LifxCommunicator.Instance.SendCommand(command, mPanController);
             LifxPowerStateMessage returnMessage = (LifxPowerStateMessage)command.ReturnMessage;
 
             return returnMessage.PowerState;
@@ -48,7 +46,7 @@ namespace LifxLib
         {
             LifxSetPowerStateCommand command = new LifxSetPowerStateCommand(stateToSet);
 
-            LifxCommunicator.Instance.SendCommand(command, this);
+            LifxCommunicator.Instance.SendCommand(command, mPanController);
 
             LifxPowerStateMessage returnMessage = (LifxPowerStateMessage)command.ReturnMessage;
 
@@ -59,7 +57,7 @@ namespace LifxLib
         {
 
             LifxGetLabelCommand command = new LifxGetLabelCommand();
-            LifxCommunicator.Instance.SendCommand(command, this);
+            LifxCommunicator.Instance.SendCommand(command, mPanController);
 
             return ((LifxLabelMessage)command.ReturnMessage).BulbLabel;
         }
@@ -69,7 +67,7 @@ namespace LifxLib
         {
             LifxSetLabelCommand command = new LifxSetLabelCommand(newLabel);
 
-            LifxCommunicator.Instance.SendCommand(command, this);
+            LifxCommunicator.Instance.SendCommand(command, mPanController);
 
             return ((LifxLabelMessage)command.ReturnMessage).BulbLabel;
         }
@@ -79,7 +77,7 @@ namespace LifxLib
 
             LifxGetLightStatusCommand command = new LifxGetLightStatusCommand();
 
-            LifxCommunicator.Instance.SendCommand(command, this);
+            LifxCommunicator.Instance.SendCommand(command, mPanController);
 
             LifxLightStatusMessage lsMessage = (LifxLightStatusMessage)command.ReturnMessage;
 
@@ -99,7 +97,7 @@ namespace LifxLib
 
             LifxSetLightStateCommand command = new LifxSetLightStateCommand(color.Hue, color.Saturation, color.Lumnosity, color.Kelvin, fadeTime);
 
-            LifxCommunicator.Instance.SendCommand(command, this);
+            LifxCommunicator.Instance.SendCommand(command, mPanController);
         
         }
 
@@ -109,7 +107,7 @@ namespace LifxLib
 
             LifxSetDimAbsoluteCommand command = new LifxSetDimAbsoluteCommand(dimLevel, fadeTime);
 
-            LifxCommunicator.Instance.SendCommand(command, this);
+            LifxCommunicator.Instance.SendCommand(command, mPanController);
 
         }
 
@@ -123,8 +121,7 @@ namespace LifxLib
 
         public string MacAddress
         {
-            get { return mMacAddress; }
-            set { mMacAddress = value; }
+            get { return mPanController.MacAddress; }
         }
 
         public IPEndPoint IpEndpoint
