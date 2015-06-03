@@ -39,10 +39,10 @@ namespace Lifx_Test_app
                 return;            
             }
 
-            mBulb = panController[0].Bulbs[0];
+            mBulb = new LifxBulb(panController[0]);
 
             mBulbIPTB.Text = mBulb.IpEndpoint.Address.ToString(); 
-            mTargetMACTB.Text = mBulb.MacAddress;
+            mTargetMACTB.Text = mBulb.PanHandler;
             mPANControllerTB.Text = mBulb.PanHandler;
 
             LifxPowerState powerState = mBulb.GetPowerState();
