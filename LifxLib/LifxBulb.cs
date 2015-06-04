@@ -47,10 +47,8 @@ namespace LifxLib
             LifxSetPowerStateCommand command = new LifxSetPowerStateCommand(stateToSet);
 
             LifxCommunicator.Instance.SendCommand(command, mPanController);
-
-            LifxPowerStateMessage returnMessage = (LifxPowerStateMessage)command.ReturnMessage;
-
-            return returnMessage.PowerState;
+            
+            return GetPowerState();
         }
 
         public string GetLabel()
@@ -69,7 +67,7 @@ namespace LifxLib
 
             LifxCommunicator.Instance.SendCommand(command, mPanController);
 
-            return ((LifxLabelMessage)command.ReturnMessage).BulbLabel;
+            return GetLabel();
         }
 
         public LifxLightStatus GetLightStatus()

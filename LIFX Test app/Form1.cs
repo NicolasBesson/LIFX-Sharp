@@ -130,7 +130,6 @@ namespace Lifx_Test_app
         private void button9_Click(object sender, EventArgs e)
         {
             colorDialog1.ShowDialog();
-            colorDialog1.Color = mBulbColorP.BackColor;
             mBulbColorP.BackColor = colorDialog1.Color;
 
              
